@@ -51,7 +51,7 @@ $ npm start
 ![](https://i.imgur.com/PNYgV1j.png)
 
 2. 將 Ganache 所啟用的錢包匯入至 Metamask 中。
-    <img src="https://i.imgur.com/aBF7gNs.png" width="600px">
+<img src="https://i.imgur.com/aBF7gNs.png" width="300">
 
 # 網頁操作
 
