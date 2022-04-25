@@ -51,7 +51,7 @@ $ npm start
 ![](https://i.imgur.com/PNYgV1j.png)
 
 2. 將 Ganache 所啟用的錢包匯入至 Metamask 中。
-<img src="https://i.imgur.com/aBF7gNs.png" width="600">
+    <img src="https://i.imgur.com/aBF7gNs.png" width="600px">
 
 # 網頁操作
 
@@ -73,7 +73,5 @@ $ npm start
 | Setting    | 當買、賣家皆完成設定後，先將買、賣家價格依高低排序，以便後續進行計算 `Qmv` 。完成後可於 `Console` 中查看排序完成的陣列。 |
 | Qmv        | 獲得 `Qmv` 。                                                                                                   |
 | Shift      | 計算賣家經過 `Qmv` 位移後的點位，以便後續計算買賣成交價。                                                           |
-| Result     | 獲得結果買賣結果。<br />
-當 `role` 為 `seller` 時， `quantity` 為0時表示沒有賣出任何能源，負值表示賣出能源量， `balance` 皆為正值，表示獲利，如為0表示沒有能源賣出。<br />
-當 `role` 為 `buyer` 時， `quantity` 為皆為正值且等於需求量， `balance` 皆為負值，表示成本。                                       |
+| Result     | 獲得結果買賣結果。<br />當 `role` 為 `seller` 時， `quantity` 為0時表示沒有賣出任何能源，負值表示賣出能源量， `balance` 皆為正值，表示獲利，如為0表示沒有能源賣出。<br />當 `role` 為 `buyer` 時， `quantity` 為皆為正值且等於需求量， `balance` 皆為負值，表示成本。                                       |
 | Reset      | 重新設定拍賣，將原本設定及結果刪除。                                                                               |
