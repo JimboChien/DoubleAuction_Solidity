@@ -48,7 +48,7 @@ $ npm start
     - RPC URL : http://127.0.0.1:7545 (或 http://localhost:7545)
     - 鏈 ID : 5777
     - Currency Symbol : ETH (可自行設定)
-![](https://i.imgur.com/F6FFPPz.png)
+    > ![](https://i.imgur.com/F6FFPPz.png)
 
 2. 將 Ganache 所啟用的錢包以匯入至 Metamask ，即可看到初始給的 `100ETH`。
 > <img src="https://i.imgur.com/IgEUldO.png" width="200">
