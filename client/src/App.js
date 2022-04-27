@@ -5,7 +5,7 @@ import Web3 from "web3";
 import "./App.css";
 
 class App extends Component {
-  state = { sellerList: [], buyerList: [], inputRole: "seller", inputQuantity: 149, inputPrice: 619, web3: null, accounts: null, contract: null };
+  state = { sellerList: [], buyerList: [], inputRole: "seller", inputQuantity: 149, inputPrice: 619, web3: null, accounts: null, contract: null, gridPrice: 800 };
 
   componentDidMount = async () => {
     try {
@@ -39,7 +39,7 @@ class App extends Component {
   };
 
   joinAuction = async () => {
-    const { contract, inputRole, inputQuantity, inputPrice } = this.state;
+    const { inputRole, inputQuantity, inputPrice } = this.state;
 
     if (window.ethereum) {
 
@@ -47,7 +47,9 @@ class App extends Component {
       await window.ethereum
         .request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] })
         .then(() => window.ethereum.request({ method: "eth_requestAccounts" }))
-        .then((res) => contract.methods.joinAuction(inputRole, inputQuantity, inputPrice).send({ from: res[0], gas: 3000000 }));
+        .then((res) => {
+          this.joinAuctionFunction(inputRole, inputQuantity, inputPrice, res[0]);
+        });
       // .then((res) => console.log(res[0]))
 
     } else {
@@ -58,21 +60,50 @@ class App extends Component {
   }
 
   setDefaultValue = async () => {
-    const { accounts, contract } = this.state;
+    const { accounts } = this.state;
 
-    await contract.methods.joinAuction("seller", 50, 597).send({ from: accounts[1], gas: 3000000 });
-    await contract.methods.joinAuction("seller", 194, 502).send({ from: accounts[2], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 97, 729).send({ from: accounts[3], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 96, 728).send({ from: accounts[4], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 46, 522).send({ from: accounts[5], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 37, 578).send({ from: accounts[6], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 21, 670).send({ from: accounts[7], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 70, 455).send({ from: accounts[8], gas: 3000000 });
-    await contract.methods.joinAuction("buyer", 45, 449).send({ from: accounts[9], gas: 3000000 });
+    await this.joinAuctionFunction("seller", 50, 597, accounts[1]);
+    await this.joinAuctionFunction("seller", 194, 502, accounts[2]);
+    await this.joinAuctionFunction("seller", 194, 773, accounts[3]);
+    await this.joinAuctionFunction("seller", 190, 772, accounts[4]);
+    await this.joinAuctionFunction("seller", 86, 601, accounts[5]);
+    await this.joinAuctionFunction("seller", 66, 647, accounts[6]);
+    await this.joinAuctionFunction("seller", 33, 724, accounts[7]);
+    await this.joinAuctionFunction("seller", 136, 546, accounts[8]);
+    await this.joinAuctionFunction("seller", 82, 541, accounts[9]);
+
+    await this.joinAuctionFunction("buyer", 73, 682, accounts[10]);
+    await this.joinAuctionFunction("buyer", 11, 584, accounts[11]);
+    await this.joinAuctionFunction("buyer", 77, 450, accounts[12]);
+    await this.joinAuctionFunction("buyer", 54, 591, accounts[13]);
+    await this.joinAuctionFunction("buyer", 62, 472, accounts[14]);
+    await this.joinAuctionFunction("buyer", 67, 465, accounts[15]);
+    await this.joinAuctionFunction("buyer", 11, 457, accounts[16]);
+    await this.joinAuctionFunction("buyer", 27, 590, accounts[17]);
+    await this.joinAuctionFunction("buyer", 98, 486, accounts[18]);
+    await this.joinAuctionFunction("buyer", 46, 477, accounts[19]);
+    await this.joinAuctionFunction("buyer", 49, 482, accounts[20]);
+    await this.joinAuctionFunction("buyer", 91, 414, accounts[21]);
+    await this.joinAuctionFunction("buyer", 64, 630, accounts[22]);
+    await this.joinAuctionFunction("buyer", 21, 629, accounts[23]);
+    await this.joinAuctionFunction("buyer", 99, 473, accounts[24]);
+    await this.joinAuctionFunction("buyer", 44, 563, accounts[25]);
+    await this.joinAuctionFunction("buyer", 41, 556, accounts[26]);
+    await this.joinAuctionFunction("buyer", 56, 750, accounts[27]);
+    await this.joinAuctionFunction("buyer", 67, 719, accounts[28]);
+    await this.joinAuctionFunction("buyer", 56, 573, accounts[29]);
+  };
+
+  joinAuctionFunction = async (_role, _quantity, _price, _account) => {
+    const { contract, gridPrice } = this.state;
+
+    await contract.methods.joinAuction(_role, _quantity, _price).send({ from: _account, gas: 3000000 });
+    if (_role === "buyer") {
+      await contract.methods.deposit().send({ from: _account, value: _quantity * gridPrice, gas: 3000000 });
+    }
 
     this.getExisingList();
-
-  };
+  }
 
   getExisingList = async () => {
     const { contract } = this.state;
@@ -92,22 +123,12 @@ class App extends Component {
     this.setState({ sellerList: list[0], buyerList: list[1] });
   }
 
-  setAsksAndBids = async () => {
-    const { accounts, contract } = this.state;
-    await contract.methods.setAsksAndBidsList().send({ from: accounts[0], gas: 3000000 });
-    const asks = await contract.methods.getAsksList().call();
-    const bids = await contract.methods.getBidsList().call();
-
-    console.log(asks);
-    console.log(bids);
-  }
-
   getQmv = async () => {
     const { accounts, contract } = this.state;
-    await contract.methods.getQFunction().send({ from: accounts[0], gas: 3000000 });
+    await contract.methods.getQFunction().send({ from: accounts[0], gas: 9000000 });
     const qmv = await contract.methods.getQmv().call();
 
-    console.log("Qmv: " + qmv)
+    console.log("Qmv :" + qmv);
 
   }
 
@@ -122,7 +143,7 @@ class App extends Component {
   getShift = async () => {
     const { accounts, contract } = this.state;
 
-    await contract.methods.getShift().send({ from: accounts[0], gas: 3000000 });
+    await contract.methods.getShift().send({ from: accounts[0], gas: 9000000 });
     console.log("Shift Done");
   }
 
@@ -157,11 +178,12 @@ class App extends Component {
         <button onClick={this.joinAuction} style={{ margin: "20px" }}>加入拍賣</button>
         <button onClick={this.setDefaultValue} style={{ margin: "20px" }}>加入預設資料</button>
         <button onClick={this.sort} style={{ margin: "20px" }}>Sort</button>
-        <button onClick={this.setAsksAndBids} style={{ margin: "20px" }}>Setting</button>
         <button onClick={this.getQmv} style={{ margin: "20px" }}>Qmv</button>
-        <button onClick={this.getShift} style={{ margin: "20px" }}>Shift</button>
+        <button onClick={this.getShift} style={{ margin: "20px" }}>Shift & Match</button>
         <button onClick={this.getResult} style={{ margin: "20px" }}>Result</button>
         <button onClick={this.reset} style={{ margin: "20px" }}>Reset</button>
+        <div>賣家數量：{this.state.sellerList.length} 買家數量：{this.state.buyerList.length}</div>
+        <br />
         <div>賣家清單{this.state.sellerList.map(seller => <p key={seller.addr}>{seller.addr} {"=>"}Quantity: {seller.quantity} {","}Price: {seller.price} </p>)}</div>
         <div>買家清單{this.state.buyerList.map(buyer => <p key={buyer.addr}>{buyer.addr} {"=>"}Quantity: {buyer.quantity} {","}Price: {buyer.price} </p>)}</div>
 

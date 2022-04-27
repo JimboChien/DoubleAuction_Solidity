@@ -84,20 +84,19 @@ contract DoubleAuction is Role {
         return (sellers, buyers);
     }
 
-    function setAsksAndBidsList() public {
+    function setAsksAndBidsList(string memory _method) public {
+        delete Asks;
         for (uint256 i = 0; i < sellers.length; i++) {
             Asks.push(sellers[i]);
         }
 
-        quickSort("asc", Asks, 0, int256(Asks.length - 1));
-        // for (uint256 i = 0; i < Asks.length; i++) {
-        //     Asks[i].price = 0 - Asks[i].price;
-        // }
+        quickSort(_method, Asks, 0, int256(Asks.length - 1));
 
+        delete Bids;
         for (uint256 i = 0; i < buyers.length; i++) {
             Bids.push(buyers[i]);
         }
-        quickSort("asc", Bids, 0, int256(Bids.length - 1));
+        quickSort(_method, Bids, 0, int256(Bids.length - 1));
     }
 
     function quickSort(
@@ -133,11 +132,13 @@ contract DoubleAuction is Role {
     }
 
     int256 qMin;
+    int256 totalSellersQuantity;
 
     function getQFunction() public {
-        qMin = 0;
         Participant memory a;
         Participant memory b;
+
+        setAsksAndBidsList("asc");
 
         a = poll("seller");
         if (a.price != 0 && a.quantity != 0) {
@@ -173,133 +174,49 @@ contract DoubleAuction is Role {
     }
 
     function getShift() public {
-        int256 sellersQuantity = 0;
-        for (uint256 i = 0; i < sellers.length; i++) {
-            sellersQuantity -= sellers[i].quantity;
-        }
-        sellersQuantity += qMin;
-
+        totalSellersQuantity = qMin;
         // Match
         for (uint256 i = 0; i < sellers.length; i++) {
-            Asks.push(sellers[i]);
+            totalSellersQuantity -= sellers[i].quantity;
         }
 
-        quickSort("desc", Asks, 0, int256(Asks.length - 1));
-
-        for (uint256 i = 0; i < buyers.length; i++) {
-            Bids.push(buyers[i]);
-        }
-        quickSort("desc", Bids, 0, int256(Bids.length - 1));
+        setAsksAndBidsList("desc");
 
         Participant memory a;
         Participant memory b;
-        int256 tempBalance = 0;
-        int256 tempQuantity = 0;
         bool temp4seller = true;
 
+        a = poll("seller");
         b = poll("buyer");
-        if (b.price != 0 && b.quantity != 0) {
+
+        while (totalSellersQuantity + a.quantity < 0) {
+            totalSellersQuantity += a.quantity;
             a = poll("seller");
+        }
 
-            while (sellersQuantity + a.quantity < 0) {
-                sellersQuantity += a.quantity;
-                pushResult(a.addr, "seller", a.quantity, 0);
+        a.quantity += totalSellersQuantity;
+
+        while (b.price != 0 && b.quantity != 0) {
+            if (a.price == 0 && a.quantity == 0) {
+                break;
+            } else if (a.quantity < b.quantity) {
+                pushResult(b.addr, a.addr, a.quantity, a.price);
+
+                temp4seller = false;
+                b.quantity -= a.quantity;
                 a = poll("seller");
-            }
+            } else if (a.quantity > b.quantity) {
+                pushResult(b.addr, a.addr, b.quantity, a.price);
 
-            a.quantity += sellersQuantity;
+                temp4seller = true;
+                a.quantity -= b.quantity;
+                b = poll("buyer");
+            } else {
+                pushResult(b.addr, a.addr, a.quantity, a.price);
 
-            while (b.price != 0 && b.quantity != 0) {
-                if (a.price == 0 && a.quantity == 0) {
-                    pushResult(
-                        b.addr,
-                        "buyer",
-                        tempQuantity + b.quantity,
-                        0 - (tempBalance + b.quantity * gridPrice)
-                    );
-                    tempQuantity = 0;
-                    tempBalance = 0;
-                    b = poll("buyer");
-                } else if (a.quantity < b.quantity) {
-                    if (temp4seller) {
-                        pushResult(
-                            a.addr,
-                            "seller",
-                            0 - (tempQuantity + a.quantity),
-                            tempBalance + a.quantity * a.price
-                        );
-                        tempQuantity = a.quantity;
-                        tempBalance = a.quantity * a.price;
-                    } else {
-                        pushResult(
-                            a.addr,
-                            "seller",
-                            0 - a.quantity,
-                            a.quantity * a.price
-                        );
-                        tempQuantity += a.quantity;
-                        tempBalance += a.quantity * a.price;
-                    }
-                    temp4seller = false;
-                    b.quantity -= a.quantity;
-                    a = poll("seller");
-                } else if (a.quantity > b.quantity) {
-                    if (!temp4seller) {
-                        pushResult(
-                            b.addr,
-                            "buyer",
-                            tempQuantity + b.quantity,
-                            0 - (tempBalance + b.quantity * a.price)
-                        );
-                        tempQuantity = b.quantity;
-                        tempBalance = b.quantity * a.price;
-                    } else {
-                        pushResult(
-                            b.addr,
-                            "buyer",
-                            b.quantity,
-                            0 - (b.quantity * a.price)
-                        );
-                        tempQuantity += b.quantity;
-                        tempBalance += b.quantity * a.price;
-                    }
-                    temp4seller = true;
-                    a.quantity -= b.quantity;
-                    b = poll("buyer");
-                } else {
-                    if (temp4seller) {
-                        pushResult(
-                            a.addr,
-                            "seller",
-                            0 - (tempQuantity + a.quantity),
-                            tempBalance + a.quantity * a.price
-                        );
-                        pushResult(
-                            b.addr,
-                            "buyer",
-                            b.quantity,
-                            0 - (b.quantity * a.price)
-                        );
-                    } else {
-                        pushResult(
-                            a.addr,
-                            "seller",
-                            0 - a.quantity,
-                            a.quantity * a.price
-                        );
-                        pushResult(
-                            b.addr,
-                            "buyer",
-                            tempQuantity + b.quantity,
-                            0 - (tempBalance + b.quantity * a.price)
-                        );
-                    }
-                    temp4seller = true;
-                    tempQuantity = 0;
-                    tempBalance = 0;
-                    a = poll("seller");
-                    b = poll("buyer");
-                }
+                temp4seller = true;
+                a = poll("seller");
+                b = poll("buyer");
             }
         }
     }
@@ -309,17 +226,17 @@ contract DoubleAuction is Role {
     }
 
     function pushResult(
-        address addr,
-        string memory role,
-        int256 quantity,
-        int256 balance
+        address _buyer,
+        address _seller,
+        int256 _quantity,
+        int256 _balance
     ) internal {
         Result memory result;
 
-        result.addr = addr;
-        result.role = role;
-        result.quantity = quantity;
-        result.balance = balance;
+        result.buyer = _buyer;
+        result.seller = _seller;
+        result.quantity = _quantity;
+        result.balance = _balance;
         results.push(result);
     }
 
@@ -327,6 +244,12 @@ contract DoubleAuction is Role {
         delete sellers;
         delete buyers;
         delete results;
+        delete Asks;
+        delete Bids;
+        qMin = 0;
+        for (uint256 i = 0; i < allAddress.length; i++) {
+            balances[allAddress[i]] = 0;
+        }
     }
 
     function isEmpty(string memory _role) public view returns (bool) {
@@ -380,5 +303,108 @@ contract DoubleAuction is Role {
 
     function min(int256 a, int256 b) internal pure returns (int256) {
         return a <= b ? a : b;
+    }
+
+    // =================================================================
+    // |                             Token                             |
+    // =================================================================
+
+    string public constant name = "Energy Token";
+    string public constant symbol = "ENG";
+    uint8 public constant decimals = 0;
+
+    constructor() public {
+        balances[msg.sender] = 0;
+    }
+
+    event Approval(
+        address indexed tokenOwner,
+        address indexed spender,
+        uint256 tokens
+    );
+    event Transfer(address indexed from, address indexed to, uint256 tokens);
+
+    mapping(address => uint256) balances;
+    address[] allAddress;
+
+    mapping(address => mapping(address => uint256)) allowed;
+
+    // uint256 totalSupply_;
+
+    using SafeMath for uint256;
+
+    // function totalSupply() public view returns (uint256) {
+    //     return totalSupply_;
+    // }
+
+    function balanceOf(address tokenOwner) public view returns (uint256) {
+        return balances[tokenOwner];
+    }
+
+    function transfer(address receiver, uint256 numTokens)
+        public
+        returns (bool)
+    {
+        require(numTokens <= balances[msg.sender]);
+        balances[msg.sender] = balances[msg.sender].sub(numTokens);
+        balances[receiver] = balances[receiver].add(numTokens);
+        emit Transfer(msg.sender, receiver, numTokens);
+        return true;
+    }
+
+    function approve(address delegate, uint256 numTokens)
+        public
+        returns (bool)
+    {
+        allowed[msg.sender][delegate] = numTokens;
+        emit Approval(msg.sender, delegate, numTokens);
+        return true;
+    }
+
+    function allowance(address owner, address delegate)
+        public
+        view
+        returns (uint256)
+    {
+        return allowed[owner][delegate];
+    }
+
+    function transferFrom(
+        address owner,
+        address buyer,
+        uint256 numTokens
+    ) public returns (bool) {
+        require(numTokens <= balances[owner]);
+        require(numTokens <= allowed[owner][msg.sender]);
+
+        balances[owner] = balances[owner].sub(numTokens);
+        allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);
+        balances[buyer] = balances[buyer].add(numTokens);
+        emit Transfer(owner, buyer, numTokens);
+        return true;
+    }
+
+    function deposit() public payable {
+        uint256 numTokens = msg.value;
+        balances[msg.sender] += numTokens;
+        allAddress.push(msg.sender);
+    }
+
+    function withdraw() public {
+        msg.sender.transfer(balances[msg.sender]);
+        balances[msg.sender] = 0;
+    }
+}
+
+library SafeMath {
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        assert(b <= a);
+        return a - b;
+    }
+
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        assert(c >= a);
+        return c;
     }
 }

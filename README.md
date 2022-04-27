@@ -1,7 +1,7 @@
 # 啟動 Ganache
 
 ```bash
-$ ganache-cli -p 7545 --networkId 5777 --gasPrice 0 --gasLimit 9000000 --chainId 5777
+$ ganache-cli -p 7545 --networkId 5777 --gasPrice 0 --gasLimit 9000000 --chainId 5777 -a 30
 ```
 
 - `-p` : 將 port 設定為 `7545` (和 `truffle-config.js` 設定的 port 一致)。
@@ -9,6 +9,7 @@ $ ganache-cli -p 7545 --networkId 5777 --gasPrice 0 --gasLimit 9000000 --chainId
 - `--gasPrice` : 將手續費設定為 0。
 - `--gasLimit` : 將手續費上限設定為 9000000 (比預設高)。
 - `--chainId` : 將 chainId 設定為 5777。
+- `-a` : 使用 `-a` 創建30個帳戶。
 
 # 編譯及部署智能合約
 

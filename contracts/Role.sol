@@ -9,8 +9,8 @@ contract Role {
     }
 
     struct Result {
-        address addr;
-        string role;
+        address buyer;
+        address seller;
         int256 quantity;
         int256 balance;
     }
