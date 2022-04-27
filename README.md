@@ -47,8 +47,8 @@ $ npm start
     - 網路名稱 : Ganache (可自行設定)
     - RPC URL : http://127.0.0.1:7545 (或 http://localhost:7545)
     - 鏈 ID : 5777
-    - Currency Symbol : TEST (可自行設定)
-![](https://i.imgur.com/PNYgV1j.png)
+    - Currency Symbol : ETH (可自行設定)
+![](https://i.imgur.com/F6FFPPz.png)
 
 2. 將 Ganache 所啟用的錢包匯入至 Metamask 中。
 <img src="https://i.imgur.com/aBF7gNs.png" width="300">
