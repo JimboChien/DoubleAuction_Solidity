@@ -54,7 +54,7 @@ $ npm start
 <img src="https://i.imgur.com/IgEUldO.png" width="300">
 
 3. 點擊下方藍字 <font color="blue">Import tokens</font>，並將使用 `truffle migrate` 部署後，所得到的智能合約地址輸入即可搜尋到代幣。
-<div style={{display: flex;}}><img src="https://i.imgur.com/CLjiFmc.png"><img src="https://i.imgur.com/xKhFgvu.png" width="300"></div>
+<div style={{display: flex;}}><img src="https://i.imgur.com/CLjiFmc.png" width="400"><img src="https://i.imgur.com/xKhFgvu.png" width="300"></div>
 
 4. 可同時看到 ETH 及 ENG(抵押貸幣)。
 <img src="https://i.imgur.com/Y7Gd7W4.png" width="300">
