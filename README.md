@@ -94,6 +94,7 @@ $ npm start
 4. 能源中心在買賣家加入拍賣後，呼叫智能合約計算Qmv，並計算配對結果，最後顯示結果：
 
 5. 能源中心執行 Settlement 來依據配對結果移轉 ENG 代幣：
+![5](https://user-images.githubusercontent.com/39701397/165732774-ea9f714a-148a-4573-a754-df95ab3d99ec.gif)
 
 最後可看到：
 - Account2(賣家) ENG 代幣為 0，表示該賣家價格設定過高，沒有賣出能源。
