@@ -128,7 +128,7 @@ class App extends Component {
     await contract.methods.getQFunction().send({ from: accounts[0], gas: 9000000 });
     const qmv = await contract.methods.getQmv().call();
 
-    console.log("Qmv :" + qmv);
+    console.log("Qmv :" + (qmv / 100));
 
   }
 
@@ -144,7 +144,7 @@ class App extends Component {
     const { accounts, contract } = this.state;
 
     await contract.methods.getShift().send({ from: accounts[0], gas: 9000000 });
-    console.log("Shift Done");
+    console.log("Shift Done !!!");
   }
 
   getResult = async () => {
@@ -152,6 +152,13 @@ class App extends Component {
 
     const result = await contract.methods.getResults().call({ from: accounts[0], gas: 3000000 });
     console.log(result);
+  }
+
+  settlement = async () => {
+    const { accounts, contract } = this.state;
+
+    await contract.methods.settlement().send({ from: accounts[0], gas: 3000000 });
+    console.log("Settlement Done !!!");
   }
 
   render() {
@@ -181,6 +188,7 @@ class App extends Component {
         <button onClick={this.getQmv} style={{ margin: "20px" }}>Qmv</button>
         <button onClick={this.getShift} style={{ margin: "20px" }}>Shift & Match</button>
         <button onClick={this.getResult} style={{ margin: "20px" }}>Result</button>
+        <button onClick={this.settlement} style={{ margin: "20px" }}>Settlement</button>
         <button onClick={this.reset} style={{ margin: "20px" }}>Reset</button>
         <div>賣家數量：{this.state.sellerList.length} 買家數量：{this.state.buyerList.length}</div>
         <br />

@@ -225,6 +225,15 @@ contract DoubleAuction is Role {
         return results;
     }
 
+    function settlement() public {
+        for (uint256 i = 0; i < results.length; i++) {
+            uint256 total = uint256(results[i].quantity * results[i].balance);
+
+            balances[results[i].buyer] -= total;
+            balances[results[i].seller] += total;
+        }
+    }
+
     function pushResult(
         address _buyer,
         address _seller,
