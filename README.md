@@ -87,6 +87,8 @@ $ npm start
 
 1. 啟動 Ganache 並匯入錢包（Account2 為賣家，Account3 為買家）：
 
+https://user-images.githubusercontent.com/39701397/165740141-f93d6a77-f137-4ead-9a34-e25e68108e52.mp4
+
 2. 部署智能合約，並新增代幣(ENG)：
 
 3. 加入拍賣，完成後買家將以以太幣兌換成代幣（只有買家需要先抵押）：
@@ -94,7 +96,9 @@ $ npm start
 4. 能源中心在買賣家加入拍賣後，呼叫智能合約計算Qmv，並計算配對結果，最後顯示結果：
 
 5. 能源中心執行 Settlement 來依據配對結果移轉 ENG 代幣：
-![5](https://user-images.githubusercontent.com/39701397/165732774-ea9f714a-148a-4573-a754-df95ab3d99ec.gif)
+<!-- ![5](https://user-images.githubusercontent.com/39701397/165732774-ea9f714a-148a-4573-a754-df95ab3d99ec.gif) -->
+https://user-images.githubusercontent.com/39701397/165740010-ac76a0d6-f49b-4729-aa33-2316a67297af.mov
+
 
 最後可看到：
 - Account2(賣家) ENG 代幣為 0，表示該賣家價格設定過高，沒有賣出能源。
