@@ -12,6 +12,12 @@ contract Role {
         address buyer;
         address seller;
         int256 quantity;
-        int256 balance;
+        int256 price;
+    }
+
+    struct Statistics {
+        int256 avg;
+        int256 min;
+        int256 max;
     }
 }

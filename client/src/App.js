@@ -62,6 +62,7 @@ class App extends Component {
   setDefaultValue = async () => {
     const { accounts } = this.state;
 
+    // await this.joinAuctionFunction("seller", 149, 618, accounts[0]);
     await this.joinAuctionFunction("seller", 50, 597, accounts[1]);
     await this.joinAuctionFunction("seller", 194, 502, accounts[2]);
     await this.joinAuctionFunction("seller", 194, 773, accounts[3]);
@@ -71,7 +72,6 @@ class App extends Component {
     await this.joinAuctionFunction("seller", 33, 724, accounts[7]);
     await this.joinAuctionFunction("seller", 136, 546, accounts[8]);
     await this.joinAuctionFunction("seller", 82, 541, accounts[9]);
-
     await this.joinAuctionFunction("buyer", 73, 682, accounts[10]);
     await this.joinAuctionFunction("buyer", 11, 584, accounts[11]);
     await this.joinAuctionFunction("buyer", 77, 450, accounts[12]);
@@ -152,6 +152,9 @@ class App extends Component {
 
     const result = await contract.methods.getResults().call({ from: accounts[0], gas: 3000000 });
     console.log(result);
+
+    const statistics = await contract.methods.getStatistics().call({ from: accounts[0], gas: 3000000 });
+    console.log("Avg: " + statistics[0] + "\tMin: " + statistics[1] + "\tMax: " + statistics[2])
   }
 
   settlement = async () => {

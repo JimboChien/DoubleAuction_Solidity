@@ -11,6 +11,7 @@ contract DoubleAuction is Role {
     Participant[] public Bids;
     Result[] public results;
     int256 gridPrice = 800;
+    Statistics public statistics;
 
     function joinAuction(
         string memory _role,
@@ -219,15 +220,30 @@ contract DoubleAuction is Role {
                 b = poll("buyer");
             }
         }
+
+        int256 total_quantity = 0;
+        int256 total_balance = 0;
+        for (uint256 i = 0; i < results.length; i++) {
+            total_quantity += results[i].quantity;
+            total_balance += results[i].quantity * results[i].price;
+        }
+
+        statistics.avg = total_balance / total_quantity;
+        statistics.max = results[0].price;
+        statistics.min = results[results.length - 1].price;
     }
 
     function getResults() public view returns (Result[] memory) {
         return results;
     }
 
+    function getStatistics() public view returns (Statistics memory) {
+        return statistics;
+    }
+
     function settlement() public {
         for (uint256 i = 0; i < results.length; i++) {
-            uint256 total = uint256(results[i].quantity * results[i].balance);
+            uint256 total = uint256(results[i].quantity * results[i].price);
 
             balances[results[i].buyer] -= total;
             balances[results[i].seller] += total;
@@ -238,14 +254,14 @@ contract DoubleAuction is Role {
         address _buyer,
         address _seller,
         int256 _quantity,
-        int256 _balance
+        int256 _price
     ) internal {
         Result memory result;
 
         result.buyer = _buyer;
         result.seller = _seller;
         result.quantity = _quantity;
-        result.balance = _balance;
+        result.price = _price;
         results.push(result);
     }
 
@@ -253,6 +269,7 @@ contract DoubleAuction is Role {
         delete sellers;
         delete buyers;
         delete results;
+        delete statistics;
         delete Asks;
         delete Bids;
         qMin = 0;
